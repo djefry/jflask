@@ -1,6 +1,7 @@
 from sqlalchemy import (
     ForeignKey, Column, Integer,
-    Text, String, DateTime, Table
+    Text, String, DateTime,
+    Table, Boolean
 )
 from sqlalchemy.orm import relationship, backref
 from app.database import Base
@@ -13,6 +14,7 @@ class EventModel(Base):
     email_subject = Column(Text(100), nullable=False)
     email_content = Column(Text(1000), nullable=False)
     timestamp = Column(DateTime(), nullable=False)
+    sent = Column(Boolean(), default=False)
     members = relationship('MemberModel', secondary='event_member_link')
 
     # Representation
