@@ -6,6 +6,7 @@ from celery.utils.log import get_task_logger
 from app.event.models import EventModel, MemberModel
 from app.database import db_session
 from flask_mail import Mail, Message
+from collections import defaultdict
 
 # App initialization
 app = create_app()
@@ -23,12 +24,13 @@ celery = make_celery(app)
 def send_email(data):
     # with app.app_context():
     with mail.connect() as conn:
-        msg = Message(data['subject'],
-                      sender="admin@jflask.com",
-                      recipients=[data['email']])
-        msg.body = data['content']
-        # conn.send(msg)
-        logger.info("Async task complete")
+        for email in data['email']:
+            msg = Message(data['subject'],
+                          sender="admin@jflask.com",
+                          recipients=[email])
+            msg.body = data['content']
+            # conn.send(msg)
+            logger.info("Async task complete for: {}".format(email))
 
 
 # Periodic task, beat speed in setting/config
@@ -48,14 +50,14 @@ def periodic_task():
             email_subject = qs_mail.email_subject.decode("utf-8")
             email_content = qs_mail.email_content.decode("utf-8")
             # Get email address
-            data = {}
+            data = defaultdict(list)
             for mail in qs_mail.members:
-                data['email'] = (mail.email)
-            logger.info("Email: {}".format(data['email']))
+                data['email'].append(mail.email)
+
             data['subject'] = email_subject
             data['content'] = email_content
             # Send async email
-            send_email.delay(data)
+            send_email.apply_async([data], countdown=10)
             # Change sent status to true
             qs_mail.sent = True
             Session.commit()
