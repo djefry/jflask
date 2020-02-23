@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Welcome to JFlask</h1>
+<h1>JFlask</h1>
+<span>Event Management and Organizer</span></br>
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 <ul>
@@ -11,4 +12,23 @@
 </ul>
 {% endif %}
 {% endwith %}
+{% for data in context.obj %}
+<div style="width: 800px; float: left; border-bottom: 1px solid gray; ">
+    <div style="width: 390px; padding: 5px; float: left;">
+        <h4>Email Detail</h4>
+        <h5>Subject : </br>{{data.email_subject.decode("utf-8")}}</h5>
+        <h5>Content : </h5>{{data.email_content.decode("utf-8")}}
+        <h5>Time to send : </h5>{{data.timestamp}} (UTC+8)
+    </div>
+    <div style="width: 390px; padding: 5px; float: left;">
+        <h4>Status : {% if data.sent %} Sent {% else %} Queuering {% endif %}</h4>
+        <h5>Member</h5>
+        {% for member in data.members %}
+        <ul>
+            <li>{{ member.username }}</li>
+        </ul>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
 {% endblock content %}
