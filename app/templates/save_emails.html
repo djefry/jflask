@@ -28,7 +28,7 @@
     </p>
     <p>
         {{ form.timestamp.label }} :<br>
-        {{ form.timestamp(size=32) }}<br>
+        {{ form.timestamp(size=32) }} in (UTC+8)<br>
         {% for error in form.timestamp.errors %}
         <span style="color: red;">* {{ error }}</span>
         {% endfor %}
