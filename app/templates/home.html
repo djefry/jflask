@@ -21,7 +21,7 @@
         <h5>Time to send : </h5>{{data.timestamp}} (UTC+8)
     </div>
     <div style="width: 390px; padding: 5px; float: left;">
-        <h4>Status : {% if data.sent %} Sent {% else %} Queuering {% endif %}</h4>
+        <h4>Status : {% if data.sent %} Sent {% else %} Queued up {% endif %}</h4>
         <h5>Member</h5>
         {% for member in data.members %}
         <ul>
