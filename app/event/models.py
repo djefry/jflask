@@ -11,8 +11,8 @@ class EventModel(Base):
     __tablename__ = 'events'
 
     event_id = Column(Integer(), primary_key=True)
-    email_subject = Column(Text(100), nullable=False)
-    email_content = Column(Text(1000), nullable=False)
+    email_subject = Column(Text(), nullable=False)
+    email_content = Column(Text(), nullable=False)
     timestamp = Column(DateTime(), nullable=False)
     sent = Column(Boolean(), default=False)
     members = relationship('MemberModel', secondary='event_member_link')
@@ -26,8 +26,8 @@ class MemberModel(Base):
     __tablename__ = 'members'
 
     member_id = Column(Integer(), primary_key=True)
-    email = Column(String(100), nullable=False)
-    username = Column(String(100), nullable=False)
+    email = Column(String(), nullable=False)
+    username = Column(String(), nullable=False)
 
     # Relationships
     events = relationship(
