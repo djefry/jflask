@@ -14,8 +14,8 @@ def save_emails():
                            for m in Session.query(MemberModel).all()]
     if form.validate_on_submit():
         event_data = EventModel(
-            email_subject=form.email_subject.data.encode('utf-8'),
-            email_content=form.email_content.data.encode('utf-8'),
+            email_subject=form.email_subject.data,
+            email_content=form.email_content.data,
             timestamp=form.timestamp.data
         )
         for member in form.member.data:
