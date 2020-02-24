@@ -3,10 +3,7 @@ services:
     postgres:
         image: 'postgres:latest'
         environment: 
-            - POSTGRES_HOST=postgres
-            - POSTGRES_DB=postgres
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=secret
+            - PGHOST=postgres
     
     redis:
         image: 'redis:latest'
@@ -25,15 +22,14 @@ services:
             - PGUSER=postgres
             - PGHOST=postgres
             - PGDATABASE=postgres
-            - PGPASSWORD=secret
+            - PGPASSWORD=postgres
             - PGPORT=5432
     celery-beat:
         build: .
         command: celery beat -A run.celery --loglevel=INFO
-        volumes:
-            - .:/app
     celery-worker:
         build: .
         command: celery worker -A run.celery --loglevel=INFO
-        volumes:
-            - .:/app
+        environment: 
+            - PGHOST=postgres
+            
