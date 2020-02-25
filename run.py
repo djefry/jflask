@@ -16,7 +16,7 @@ Session = db_session()
 # Email initialization
 mail = Mail(app)
 
-# Celery initialization
+# Creating celery app
 logger = get_task_logger(__name__)
 celery = make_celery(app)
 
@@ -47,24 +47,33 @@ def periodic_task():
     for date in qs_date:
         # Compare the timestamp with time now
         if date.timestamp <= time_now:
-            # Joint EventModel and Member Model to get email address
-            qs_mail = Session.query(EventModel).filter(and_(EventModel.event_id == date.event_id),
-                                                       (EventModel.members)).one()
+            try:
+                # Joint EventModel and Member Model to get email address
+                qs_mail = Session.query(EventModel).filter(and_(EventModel.event_id == date.event_id),
+                                                           (EventModel.members)).one()
 
-            email_subject = qs_mail.email_subject
-            email_content = qs_mail.email_content
-            # Get email address
-            data = defaultdict(list)
-            for mail in qs_mail.members:
-                data['email'].append(mail.email)
+                email_subject = qs_mail.email_subject
+                email_content = qs_mail.email_content
+                # Get email address
+                data = defaultdict(list)
+                for mail in qs_mail.members:
+                    data['email'].append(mail.email)
 
-            data['subject'] = email_subject
-            data['content'] = email_content
-            # Send async email
-            send_email.apply_async([data], countdown=1)
-            # Change sent status to true
-            qs_mail.sent = True
-            Session.commit()
+                data['subject'] = email_subject
+                data['content'] = email_content
+                # Send async email
+                send_email.apply_async([data], countdown=1)
+                # Change sent status to true
+                qs_mail.sent = True
+                Session.commit()
+            except Exception as e:
+                # When occurred must send email to administrator.
+                # msg = Message("Error!",
+                #               sender="system@jflask.com",
+                #               recipients=["admin@jflask.com"])
+                # msg.body = "Periodic task database connection Error."
+                # mail.send(msg)
+                return "Database connection failed, Please contact your administrator."
 
     logger.info("Periodic task run at {}".format(time_now))
 
