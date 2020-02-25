@@ -15,6 +15,8 @@ class EventModel(Base):
     email_content = Column(Text(), nullable=False)
     timestamp = Column(DateTime(), nullable=False)
     sent = Column(Boolean(), default=False)
+
+    # Relationships
     members = relationship('MemberModel', secondary='event_member_link')
 
     # Representation
