@@ -17,5 +17,5 @@ def init_engine(uri, **kwargs):
 
 
 def init_db():
-    from app.event.models import EventModel
+    from app.event.models import EventModel, MemberModel
     Base.metadata.create_all(bind=engine)
