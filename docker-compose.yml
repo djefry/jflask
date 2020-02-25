@@ -24,12 +24,18 @@ services:
             - PGDATABASE=postgres
             - PGPASSWORD=postgres
             - PGPORT=5432
+        depends_on:
+            - "postgres"
     celery-beat:
         build: .
-        command: celery beat -A run.celery --loglevel=INFO
+        command: celery beat -A run.celery --loglevel=INFO --pidfile=
+        depends_on:
+            - "redis"
     celery-worker:
         build: .
         command: celery worker -A run.celery --loglevel=INFO
         environment: 
             - PGHOST=postgres
-            
+        depends_on:
+            - "postgres"
+            - "redis"
