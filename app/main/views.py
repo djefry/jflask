@@ -8,9 +8,12 @@ Session = db_session()
 
 @main.route("/")
 def index():
-    app = current_app._get_current_object()
-    obj = Session.query(EventModel).filter(
-        EventModel.members).order_by(EventModel.event_id.desc()).all()
+    try:
+        obj = Session.query(EventModel).filter(
+            EventModel.members).order_by(EventModel.event_id.desc()).all()
+    except Exception as e:
+        return "Database connection failed, Please contact your administrator."
+
     context = {
         'obj': obj,
     }
