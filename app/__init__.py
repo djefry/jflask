@@ -10,8 +10,7 @@ def create_app(config=None):
     app.config.from_object(config)
 
     # Database Initialization
-    init_engine(app.config['SQLALCHEMY_DATABASE_URI'],
-                connect_args={'client_encoding': 'utf8'})
+    init_engine(app.config['SQLALCHEMY_DATABASE_URI'])
     init_db()
 
     # Initialize any extension and bind blueprint
