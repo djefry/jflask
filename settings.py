@@ -3,7 +3,7 @@
 # Object configuration
 class ConfigApp:
     # Database Configuration
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:secret@postgres/postgres'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:secret@postgres/postgres?client_encoding=utf8'
 
     # Secret Key
     SECRET_KEY = 'secret'
