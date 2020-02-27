@@ -1,7 +1,7 @@
 # App configuration
 class ConfigTest:
     # Set database URI for testing
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost:@wandashare/test?client_encoding=utf8'
+    SQLALCHEMY_DATABASE_URI = 'postgresql:///test?client_encoding=utf8'
     # Enable debug mode
     DEBUG = True
     # Enable test
