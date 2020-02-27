@@ -12,7 +12,6 @@ Base = declarative_base()
 def init_engine(uri, **kwargs):
     global engine
     engine = create_engine(uri, **kwargs)
-    db_session(bind=engine)
     return engine
 
 
