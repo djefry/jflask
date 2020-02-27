@@ -1,7 +1,8 @@
 from flask import Flask
 import datetime
-from app.database import init_engine, init_db
+from app.database import init_engine, init_db, db_session
 from celery import Celery
+from sqlalchemy_utils import database_exists, create_database
 
 
 def create_app(config=None):
@@ -10,8 +11,12 @@ def create_app(config=None):
     app.config.from_object(config)
 
     # Database Initialization
-    init_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-    init_db()
+    engine = init_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    if not database_exists(engine.url):
+        create_database(engine.url)
+
+    db_session(bind=engine)
+    db = init_db()
 
     # Initialize any extension and bind blueprint
     from .main.views import main as main_blueprint
