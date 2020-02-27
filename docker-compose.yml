@@ -4,6 +4,7 @@ services:
         image: 'postgres:latest'
         environment: 
             - PGHOST=postgres
+            - POSTGRES_HOST_AUTH_METHOD=trust
     
     redis:
         image: 'redis:latest'
@@ -31,6 +32,7 @@ services:
         command: celery beat -A run.celery --loglevel=INFO --pidfile=
         depends_on:
             - "redis"
+            - "jflask"
     celery-worker:
         build: .
         command: celery worker -A run.celery --loglevel=INFO
@@ -39,3 +41,4 @@ services:
         depends_on:
             - "postgres"
             - "redis"
+            - "jflask"
