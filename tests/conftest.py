@@ -1,55 +1,43 @@
 import pytest
+import pytest_html
 from test_settings import ConfigTest
 from app import create_app
-from app.database import db_session, init_db, init_engine
+from app.database import db_session
+from sqlalchemy_utils import drop_database
+from selenium import webdriver
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def app():
     """
     Creates a new Flask application for a test duration.
     Uses application factory `create_app`.
     """
     app = create_app(ConfigTest)
-    return app
+    yield app
 
 
 @pytest.fixture(scope='session')
-def database(request):
-    '''
-    Create a Postgres database for the tests, and drop it when the tests are done.
-    '''
-    pg_host = "localhost"
-    pg_port = "5432"
-    pg_user = "wandashare"
-    pg_db = "test"
-
-    init_postgresql_database(pg_user, pg_host, pg_port, pg_db)
-    print(init_postgresql_database(pg_user, pg_host, pg_port, pg_db))
-
-    @request.addfinalizer
-    def drop_database():
-        drop_postgresql_database(pg_user, pg_host, pg_port, pg_db, 11.7)
+def _db_session():
+    """
+    Create Session for test transactional database
+    """
+    Session = db_session()
+    yield Session
 
 
-@pytest.fixture(scope='session')
-def app(database):
-    '''
-    Create a Flask app context for the tests.
-    '''
-    app = Flask(__name__)
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = DB_CONN
-
-    return app
+# Fixture for Chrome
+@pytest.fixture(scope="class")
+def chrome_driver_init(request):
+    chrome_driver = webdriver.Chrome()
+    request.cls.driver = chrome_driver
+    yield
+    chrome_driver.close()
 
 
-@pytest.fixture(scope='session')
-def _db(app):
-    '''
-    Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
-    database connection.
-    '''
-    db = SQLAlchemy(app=app)
-
-    return db
+@pytest.fixture(scope="session", autouse=True)
+def cleanup(request):
+    """Cleanup once we are finished."""
+    def drop_db():
+        drop_database(ConfigTest.SQLALCHEMY_DATABASE_URI)
+    request.addfinalizer(drop_db)
